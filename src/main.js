@@ -1,124 +1,139 @@
-// 1. Define the Base Point Values for each scale
-const baseGrades = {
-    // Standard 4.0 & 5.0 letters (Standard 4.0 logic)
+// Strict Grade Mapping Data
+const SCALES = {
     "4": { 'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0.0 },
-    // 5.0 base often uses different step-downs (0.5 intervals)
     "5": { 'A+': 5.0, 'A': 5.0, 'A-': 4.5, 'B+': 4.0, 'B': 3.5, 'B-': 3.0, 'C+': 2.5, 'C': 2.0, 'C-': 1.5, 'D+': 1.0, 'D': 0.5, 'F': 0.0 },
-    // International 10.0 scale
-    "10": { 'A+': 10.0, 'A': 9.0, 'A-': 8.5, 'B+': 8.0, 'B': 7.0, 'B-': 6.5, 'C+': 6.0, 'C': 5.0, 'C-': 4.5, 'D+': 4.0, 'D': 3.0, 'F': 0.0 }
+    "10": { 'A+': 10.0, 'A': 9.0, 'A-': 8.5, 'B+': 8.0, 'B': 7.5, 'B-': 7.0, 'C+': 6.5, 'C': 6.0, 'C-': 5.5, 'D+': 5.0, 'D': 4.0, 'F': 0.0 }
 };
 
-// 2. Define Weights for "Weighted" GPA calculation
-const weights = {
-    'regular': 0.0,
-    'honors': 0.5,
-    'ap-ib-college': 1.0
-};
+const LEVEL_WEIGHTS = { 'regular': 0.0, 'honors': 0.5, 'ap': 1.0 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    let currentScale = '4';
+    let isWeighted = false;
+
     const courseList = document.getElementById('course-list');
+    const gpaDisplay = document.getElementById('gpa-display');
     const addBtn = document.getElementById('add-course');
     const calcBtn = document.getElementById('calculate-btn');
-    const gpaDisplay = document.getElementById('gpa-display');
-    const scaleSelect = document.getElementById('gpa-scale');
 
-    // Function to generate a row
-    function createRow() {
-        const div = document.createElement('div');
-        div.className = "grid grid-cols-12 gap-2 items-center course-row mb-4 animate-in fade-in duration-300";
+    // --- SEGMENTED TOGGLE LOGIC ---
+    function setupToggle(containerId, initialVal, callback) {
+        const container = document.getElementById(containerId);
+        const buttons = container.querySelectorAll('button');
         
-        const currentScale = scaleSelect.value === '10' ? '10' : (scaleSelect.value.startsWith('5') ? '5' : '4');
-        const grades = Object.keys(baseGrades[currentScale]);
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => {
+                    b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                    b.classList.add('text-slate-500');
+                });
+                btn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                btn.classList.remove('text-slate-500');
+                
+                const val = btn.dataset.scale || btn.dataset.weighted;
+                callback(val);
+            });
+        });
+    }
 
-        div.innerHTML = `
+    setupToggle('scale-toggle', '4', (val) => {
+        currentScale = val;
+        syncRowsToSettings();
+    });
+
+    setupToggle('weight-toggle', 'false', (val) => {
+        isWeighted = (val === 'true');
+        syncRowsToSettings();
+    });
+
+    // Synchronize rows with global scale/weight settings
+    function syncRowsToSettings() {
+        const rows = document.querySelectorAll('.course-row');
+        rows.forEach(row => {
+            // Level Selector UI
+            const levelSelect = row.querySelector('.level-input');
+            levelSelect.disabled = !isWeighted;
+            levelSelect.style.opacity = isWeighted ? "1" : "0.4";
+            levelSelect.style.cursor = isWeighted ? "pointer" : "not-allowed";
+            
+            // Grade Dropdown content
+            const gradeSelect = row.querySelector('.grade-input');
+            const previousVal = gradeSelect.value;
+            const grades = Object.keys(SCALES[currentScale]);
+            
+            gradeSelect.innerHTML = grades.map(g => `<option value="${g}">${g}</option>`).join('');
+            if (grades.includes(previousVal)) gradeSelect.value = previousVal;
+        });
+    }
+
+    // --- ROW GENERATION ---
+    function createRow() {
+        const row = document.createElement('div');
+        row.className = "course-row grid grid-cols-12 gap-3 p-4 items-center group transition-colors hover:bg-slate-50/50";
+        
+        row.innerHTML = `
             <div class="col-span-12 md:col-span-4">
-                <input type="text" placeholder="Course Name" class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+                <input type="text" placeholder="Course Name" class="w-full p-2 bg-transparent outline-none font-medium placeholder:text-slate-300">
             </div>
-            <div class="col-span-4 md:col-span-3">
-                <select class="w-full p-2 border rounded-lg outline-none text-sm level-input bg-slate-50">
-                    <option value="regular">Regular</option>
+            <div class="col-span-5 md:col-span-3">
+                <select class="level-input w-full p-2 bg-white md:bg-slate-100 rounded-lg text-xs font-bold appearance-none cursor-pointer border md:border-none transition-opacity">
+                    <option value="regular">Regular Course</option>
                     <option value="honors">Honors (+0.5)</option>
-                    <option value="ap-ib-college">AP/IB (+1.0)</option>
+                    <option value="ap">AP / IB (+1.0)</option>
                 </select>
             </div>
             <div class="col-span-3 md:col-span-2">
-                <input type="number" placeholder="Credits" class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400 credit-input text-sm">
+                <input type="number" placeholder="Credits" class="credit-input w-full p-2 outline-none text-center font-bold border-b-2 border-transparent focus:border-blue-500 bg-transparent" min="0">
             </div>
-            <div class="col-span-4 md:col-span-2">
-                <select class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400 grade-input text-sm">
-                    ${grades.map(g => `<option value="${g}">${g}</option>`).join('')}
-                </select>
+            <div class="col-span-3 md:col-span-2">
+                <select class="grade-input w-full p-2 font-black text-blue-600 bg-transparent outline-none cursor-pointer text-center">
+                    </select>
             </div>
             <div class="col-span-1 text-right">
-                <button class="text-slate-300 hover:text-red-500 delete-btn text-xl transition-colors">×</button>
+                <button class="delete-btn text-slate-300 hover:text-red-500 transition-colors p-1">&times;</button>
             </div>
         `;
-        
-        div.querySelector('.delete-btn').addEventListener('click', () => {
+
+        row.querySelector('.delete-btn').addEventListener('click', () => {
             if (document.querySelectorAll('.course-row').length > 1) {
-                div.remove();
+                row.remove();
+                calculateGPA();
             }
         });
 
-        courseList.appendChild(div);
+        courseList.appendChild(row);
+        syncRowsToSettings();
     }
 
-    // Calculation Logic
-    calcBtn.addEventListener('click', () => {
+    // --- CALCULATION LOGIC ---
+    function calculateGPA() {
         const rows = document.querySelectorAll('.course-row');
-        const selectedScaleType = scaleSelect.value; // e.g., "4-weighted"
-        
-        let totalPoints = 0;
+        let totalQualityPoints = 0;
         let totalCredits = 0;
 
         rows.forEach(row => {
             const credits = parseFloat(row.querySelector('.credit-input').value);
             const gradeLetter = row.querySelector('.grade-input').value;
             const level = row.querySelector('.level-input').value;
-            
-            // Determine which base point set to use
-            let baseSet = "4";
-            if (selectedScaleType.startsWith("5")) baseSet = "5";
-            if (selectedScaleType === "10") baseSet = "10";
-
-            let gradeValue = baseGrades[baseSet][gradeLetter];
-
-            // Only apply weights if the user selected a "Weighted" scale type
-            if (selectedScaleType.includes("weighted") && selectedScaleType !== "10") {
-                gradeValue += weights[level];
-            }
 
             if (!isNaN(credits) && credits > 0) {
-                totalPoints += (credits * gradeValue);
+                // Formula: (Base Grade Point + Weighted Bonus) * Credit Hours
+                let points = SCALES[currentScale][gradeLetter];
+                if (isWeighted) points += LEVEL_WEIGHTS[level];
+                
+                totalQualityPoints += (points * credits);
                 totalCredits += credits;
             }
         });
 
-        if (totalCredits > 0) {
-            const gpa = totalPoints / totalCredits;
-            gpaDisplay.innerText = gpa.toFixed(2);
-            document.getElementById('result-container').classList.remove('hidden');
-            document.getElementById('result-container').scrollIntoView({ behavior: 'smooth' });
-        } else {
-            alert("Please enter valid credit hours.");
-        }
-    });
+        const result = totalCredits > 0 ? (totalQualityPoints / totalCredits).toFixed(2) : "0.00";
+        gpaDisplay.innerText = result;
+    }
 
-    // Update grades if the base scale changes
-    scaleSelect.addEventListener('change', () => {
-        const rows = document.querySelectorAll('.course-row');
-        const val = scaleSelect.value;
-        const baseSet = val.startsWith("5") ? "5" : (val === "10" ? "10" : "4");
-        const grades = Object.keys(baseGrades[baseSet]);
-
-        rows.forEach(row => {
-            const select = row.querySelector('.grade-input');
-            select.innerHTML = grades.map(g => `<option value="${g}">${g}</option>`).join('');
-        });
-    });
-
+    // Event Listeners
     addBtn.addEventListener('click', createRow);
-    
-    // Initialize first row
-    createRow();
+    calcBtn.addEventListener('click', calculateGPA);
+
+    // Initialize with 4 rows
+    for(let i=0; i<4; i++) createRow();
 });
