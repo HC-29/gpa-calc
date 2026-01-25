@@ -13,10 +13,14 @@
 
     <main class="max-w-2xl w-full bg-white shadow-xl rounded-2xl p-6 md:p-10">
         <div class="mb-6">
-            <label class="block text-sm font-medium text-slate-600 mb-1">GPA Scale</label>
-            <select id="gpa-scale" class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
-                <option value="4">4.0 Scale</option>
-                <option value="5">5.0 Scale</option>
+            <label class="block text-sm font-medium text-slate-600 mb-1">Select GPA Scale</label>
+            <select id="gpa-scale"
+                class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400 mb-6">
+                <option value="4-unweighted">4.0 Scale (Unweighted)</option>
+                <option value="4-weighted">4.0 Scale (Weighted)</option>
+                <option value="5-unweighted">5.0 Scale (Unweighted)</option>
+                <option value="5-weighted">5.0 Scale (Weighted)</option>
+                <option value="10">10.0 Scale (International)</option>
             </select>
         </div>
         <header class="text-center mb-8">
