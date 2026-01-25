@@ -12,12 +12,20 @@
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex items-center justify-center p-4">
 
     <main class="max-w-2xl w-full bg-white shadow-xl rounded-2xl p-6 md:p-10">
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-slate-600 mb-1">GPA Scale</label>
+            <select id="gpa-scale" class="w-full p-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+                <option value="4">4.0 Scale</option>
+                <option value="5">5.0 Scale</option>
+            </select>
+        </div>
         <header class="text-center mb-8">
             <h1 class="text-3xl font-extrabold text-blue-600 tracking-tight">GPA Calculator</h1>
             <p class="text-slate-500 mt-2">Calculate your semester GPA instantly.</p>
         </header>
 
         <div id="course-list" class="mb-6">
+
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4">
