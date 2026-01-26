@@ -4,233 +4,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional GPA Calculator | Weighted & Unweighted</title>
-    <link rel="stylesheet" href="./src/style.css">
-    <link rel="shortcut icon" href="vector.svg" type="image/x-icon">
+    <title>Vector | Student Dashboard</title>
 </head>
 
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
+<body class="bg-[#F0F2F5] text-slate-900 font-sans selection:bg-primary selection:text-white pb-0">
 
-    <div class="max-w-6xl mx-auto p-4 md:p-8 pb-32">
-        <header class="mb-10 text-center md:text-left">
-            <h1 class="text-4xl font-black text-slate-800 tracking-tight">Vector <span class="text-primary">GPA</span>
-            </h1>
-            <p class="text-slate-500 mt-2">Calculate weighted and unweighted GPA with precision.</p>
-        </header>
+    <div class="max-w-6xl mx-auto px-6 py-12 min-h-screen">
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-2 space-y-8">
-
-                <section class="bg-white shadow-sm border border-slate-200 rounded-2xl p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Base
-                                Scale</label>
-                            <div id="scale-toggle" class="flex p-1 bg-slate-100 rounded-xl">
-                                <button data-scale="4"
-                                    class="flex-1 py-2 rounded-lg font-bold transition-all bg-white text-primary shadow-sm">4.0</button>
-                                <button data-scale="5"
-                                    class="flex-1 py-2 rounded-lg font-bold transition-all text-slate-500 hover:text-slate-800">5.0</button>
-                                <button data-scale="10"
-                                    class="flex-1 py-2 rounded-lg font-bold transition-all text-slate-500 hover:text-slate-800">10.0</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Calculation
-                                Type</label>
-                            <div id="weight-toggle" class="flex p-1 bg-slate-100 rounded-xl">
-                                <button data-weighted="false"
-                                    class="flex-1 py-2 rounded-lg font-bold transition-all bg-white text-primary shadow-sm">Unweighted</button>
-                                <button data-weighted="true"
-                                    class="flex-1 py-2 rounded-lg font-bold transition-all text-slate-500 hover:text-slate-800">Weighted</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="bg-white shadow-sm border border-slate-200 rounded-2xl overflow-hidden">
-                    <div
-                        class="p-4 border-b border-slate-100 bg-slate-50/50 hidden md:grid grid-cols-12 gap-4 text-[10px] font-bold uppercase text-slate-400 tracking-widest">
-                        <div class="col-span-4">Course Name</div>
-                        <div class="col-span-3">Level</div>
-                        <div class="col-span-2 text-center">Credits</div>
-                        <div class="col-span-2 text-center">Grade</div>
-                        <div class="col-span-1"></div>
-                    </div>
-
-                    <div id="course-list" class="divide-y divide-slate-100">
-                    </div>
-
-                    <button id="add-course"
-                        class="w-full py-4 bg-white text-primary font-bold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
-                        <span class="text-xl">+</span> Add Course
-                    </button>
-                </section>
-            </div>
-
-            <div class="lg:col-span-1">
-                <aside class="sticky top-8 space-y-6">
-                    <div class="bg-slate-900 rounded-3xl p-8 text-white shadow-2xl shadow-slate-200 text-center">
-                        <div class="flex justify-center mb-6">
-                            <div id="gpa-ring"
-                                class="relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-500"
-                                style="background: conic-gradient(#2563eb 0%, #e2e8f0 0%);">
-
-                                <div
-                                    class="bg-slate-900 w-[92%] h-[92%] rounded-full flex flex-col items-center justify-center text-center">
-                                    <h3 class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Your GPA
-                                    </h3>
-                                    <div id="gpa-display" class="text-6xl font-black tabular-nums">0.00</div>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="text-slate-400 text-sm mb-6">Based on your current semester</p>
-                        <button id="calculate-btn"
-                            class="w-full bg-primary hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-900/20 active:scale-95">
-                            Update Result
-                        </button>
-                    </div>
-                    <div
-                        class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:border-primary] transition-all group cursor-pointer relative overflow-hidden">
-                        <div
-                            class="absolute -right-4 -bottom-4 text-slate-50 opacity-10 group-hover:text-primary] group-hover:opacity-5 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-
-                        <div class="relative z-10">
-                            <div
-                                class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary] transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-6 w-6 text-primary] group-hover:text-white" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                </svg>
-                            </div>
-
-                            <h3 class="text-lg font-bold text-slate-800 mb-2">Grade Converter</h3>
-                            <p class="text-sm text-slate-500 leading-relaxed mb-4">
-                                Convert percentages (e.g. 92%) into letter grades or 4.0 GPA values instantly.
-                            </p>
-
-                            <a href="converter.html" class="text-primary font-bold">Try Converter →</a>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                        <h4 class="font-bold text-slate-800 mb-3">GPA Calculation Guide</h4>
-                        <div class="space-y-3 text-sm text-slate-500 leading-relaxed">
-                            <p><strong>Unweighted:</strong> All courses are calculated on the same scale regardless of
-                                difficulty.</p>
-                            <p><strong>Weighted:</strong> Honors (+0.5) and AP/IB (+1.0) courses receive a point bonus,
-                                reflecting course rigor.</p>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-        </div>
-    </div>
-    <section class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div
-            class="group p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer">
-            <div class="text-primary mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            </div>
-            <h3 class="font-bold text-slate-800 group-hover:text-primary transition-colors">High School GPA Calculator
-            </h3>
-            <p class="text-sm text-slate-500 mt-1">Specifically designed for 4.0 weighted scales and AP/IB classes.</p>
-            <span class="inline-block mt-4 text-xs font-bold text-primary uppercase tracking-widest">Try Tool
-                &rarr;</span>
-        </div>
-        <div
-            class="group p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-400 hover:shadow-md transition-all cursor-pointer">
-            <div class="text-primary mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-            </div>
-            <h3 class="font-bold text-slate-800 group-hover:text-primary transition-colors">College GPA Calculator</h3>
-            <p class="text-sm text-slate-500 mt-1">Supports letter grades with +/- and variable credit hours per
-                semester.</p>
-            <span class="inline-block mt-4 text-xs font-bold text-primary uppercase tracking-widest">Try Tool
-                &rarr;</span>
-        </div>
-    </section>
-    <footer class="bg-white border-t-[3px] border-slate-900 mt-20 w-full">
-        <div class="max-w-6xl mx-auto px-6 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-
-                <div class="md:col-span-1">
-                    <a href="/index.html" class="flex items-center gap-3 mb-6">
-                        <div
-                            class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white shadow-[3px_3px_0px_0px_rgba(0,118,237,1)]">
-                            <span class="font-black italic text-sm">V</span>
-                        </div>
-                        <span class="font-black tracking-tighter text-xl uppercase italic">Vector</span>
-                    </a>
-                    <p class="text-slate-500 text-sm font-medium leading-relaxed">
-                        A high-precision academic toolkit built for modern students. No ads, no fluff, just results.
-                    </p>
+        <nav class="flex justify-between items-center mb-16">
+            <a href="/index.html" class="flex items-center gap-3 group">
+                <div
+                    class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-[4px_4px_0px_0px_rgba(0,118,237,1)] transition-transform group-hover:-rotate-6">
+                    <span class="font-black italic text-xl">V2</span>
                 </div>
+                <span class="font-black tracking-tighter text-2xl uppercase border-b-4 border-primary">Vector</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="/converter.html"
+                    class="text-[10px] font-black uppercase tracking-widest bg-white border-2 border-slate-900 px-4 py-2 rounded-lg hover:bg-slate-900 hover:text-white transition-all">Grade
+                    Converter</a>
+                <a href="/about.html"
+                    class="text-[10px] font-black uppercase tracking-widest bg-white border-2 border-slate-900 px-4 py-2 rounded-lg hover:bg-slate-900 hover:text-white transition-all">About</a>
+            </div>
+        </nav>
 
-                <div>
-                    <h4 class="font-black uppercase text-xs tracking-[0.2em] text-slate-400 mb-6">Calculators</h4>
-                    <ul class="space-y-4 font-bold text-sm">
-                        <li><a href="/index.html" class="hover:text-primary transition-colors">GPA Calculator</a></li>
-                        <li><a href="#" class="text-slate-300 cursor-not-allowed">Final Grade Calc</a></li>
-                        <li><a href="#" class="text-slate-300 cursor-not-allowed">Weighted GPA Calc</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-black uppercase text-xs tracking-[0.2em] text-slate-400 mb-6">Utilities</h4>
-                    <ul class="space-y-4 font-bold text-sm">
-                        <li><a href="/converter.html" class="hover:text-primary transition-colors">Grade Converter</a>
-                        </li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Grade Scale Table</a></li>
-                        <li><a href="/about.html" class="hover:text-primary transition-colors">FAQ & Support</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-black uppercase text-xs tracking-[0.2em] text-slate-400 mb-6">Company</h4>
-                    <ul class="space-y-4 font-bold text-sm">
-                        <li><a href="/about.html" class="hover:text-primary transition-colors">About Vector</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Terms of Use</a></li>
-                    </ul>
-                </div>
+        <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <h1 class="text-6xl md:text-7xl font-black tracking-tighter mb-2">DASHBOARD</h1>
+                <p class="text-slate-500 font-medium italic">High-precision academic tracking.</p>
             </div>
 
             <div
-                class="mt-16 pt-8 border-t-2 border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    &copy; 2026 Vector Academic. All Rights Reserved.
-                </p>
-                <div class="flex gap-6">
-                    <a href="#" class="text-slate-400 hover:text-primary transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path
-                                d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                        </svg>
-                    </a>
+                class="bg-primary border-[3px] border-slate-900 rounded-[2.5rem] px-10 py-8 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] text-white relative overflow-hidden min-w-70">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-1">Semester GPA</p>
+                <div id="gpa-display" class="text-7xl font-black italic relative z-10">0.00</div>
+                <div class="absolute -right-4 -bottom-6 text-white/10 text-9xl font-black select-none leading-none z-0">
+                    GPA</div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10" id="calculator-app">
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-black uppercase italic tracking-tight flex items-center gap-3">
+                        <span class="w-2 h-8 bg-slate-900 rounded-full"></span>
+                        Active Courses
+                    </h2>
+                    <button id="add-course"
+                        class="bg-[#FFD54F] border-[3px] border-slate-900 px-8 py-3 rounded-2xl font-black text-sm shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95">
+                        + ADD CLASS
+                    </button>
+                </div>
+
+                <div id="course-container" class="space-y-4">
+                </div>
+            </div>
+
+            <aside class="space-y-6">
+                <div
+                    class="bg-white border-[3px] border-slate-900 rounded-[2.5rem] p-8 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)]">
+                    <h3 class="font-black text-lg mb-4 underline decoration-primary decoration-4 underline-offset-4">
+                        System Settings</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">GPA
+                                Scale</label>
+                            <select id="scale-selector"
+                                class="w-full bg-slate-50 border-2 border-slate-900 rounded-xl font-black p-3 outline-none cursor-pointer focus:ring-4 focus:ring-primary/10">
+                                <option value="4.0">Standard (4.0)</option>
+                                <option value="5.0">AP Scale (5.0)</option>
+                                <option value="10.0">10.0 Scale (Intl)</option>
+                                <option value="12.0">12.0 Scale (Intl)</option>
+                                <option value="100.0">Percentage (100)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="bg-white border-[3px] border-slate-900 rounded-[2.5rem] p-8 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)]">
+                    <h3 class="font-black text-lg mb-4 underline decoration-primary decoration-4 underline-offset-4">
+                        System Status</h3>
+                    <div class="flex items-center gap-3 text-green-600 mb-6">
+                        <div class="relative flex h-3 w-3">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </div>
+                        <span class="text-xs font-black uppercase tracking-widest" id="save-status">Local Sync
+                            Active</span>
+                    </div>
+                    <p class="text-slate-400 text-[10px] font-bold leading-relaxed uppercase">
+                        Vector stores your data locally. No accounts, no tracking, total privacy.
+                    </p>
+                </div>
+
+                <div
+                    class="bg-[#E0F2FE] border-[3px] border-slate-900 rounded-[2.5rem] p-8 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)]">
+                    <h3 class="font-black text-lg mb-2">Pro Tip</h3>
+                    <p class="text-slate-600 text-sm font-bold leading-snug">
+                        Use the Grade Converter to see how your percentage grades translate to a 4.0 scale.
+                    </p>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <footer class="w-full bg-white border-t-[3px] border-slate-900 mt-32">
+        <div class="max-w-6xl mx-auto px-6 py-16">
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16">
+
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-[4px_4px_0px_0px_rgba(0,118,237,1)]">
+                            <span class="font-black italic text-lg uppercase">V2</span>
+                        </div>
+                        <span class="font-black tracking-tighter text-2xl uppercase italic">Vector</span>
+                    </div>
+                    <p class="text-slate-500 text-sm font-bold leading-relaxed max-w-sm">
+                        The definitive high-precision toolkit for academic tracking. Engineering better futures through
+                        data-driven student success.
+                    </p>
+                </div>
+
+                <div class="md:col-span-2 md:col-start-7">
+                    <h4 class="font-black uppercase text-[10px] tracking-[0.2em] text-slate-400 mb-6">The Engine</h4>
+                    <ul class="space-y-4 font-black text-sm text-slate-900">
+                        <li><a href="/index.html"
+                                class="group flex items-center gap-2 hover:text-primary transition-all">
+                                <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Dashboard
+                            </a></li>
+                        <li><a href="/converter.html"
+                                class="group flex items-center gap-2 hover:text-primary transition-all">
+                                <span class="opacity-0 group-hover:opacity-100 transition-opacity">→</span> Converter
+                            </a></li>
+                        <li><span class="text-slate-200 cursor-not-allowed italic">Analytics v3</span></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h4 class="font-black uppercase text-[10px] tracking-[0.2em] text-slate-400 mb-6">Resources</h4>
+                    <ul class="space-y-4 font-black text-sm text-slate-900">
+                        <li><a href="/about.html"
+                                class="hover:text-primary transition-colors italic underline decoration-2 decoration-primary/30">Documentation</a>
+                        </li>
+                        <li><a href="/about.html"
+                                class="hover:text-primary transition-colors italic underline decoration-2 decoration-primary/30">About
+                                Vector</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h4 class="font-black uppercase text-[10px] tracking-[0.2em] text-slate-400 mb-6">Connect</h4>
+                    <div class="flex gap-4">
+                        <div
+                            class="w-10 h-10 border-2 border-slate-900 rounded-xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                                </path>
+                            </svg>
+                        </div>
+                        <div
+                            class="w-10 h-10 border-2 border-slate-900 rounded-xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all cursor-pointer text-xs font-black italic">
+                            X</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t-2 border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-6">
+                    <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                        &copy; 2026 VECTOR ACADEMIC // PRECISION v2.0
+                    </p>
+                    <div class="hidden md:flex gap-4">
+                        <a href="#"
+                            class="text-[9px] font-black text-slate-400 hover:text-slate-900 uppercase tracking-widest">Privacy</a>
+                        <a href="#"
+                            class="text-[9px] font-black text-slate-400 hover:text-slate-900 uppercase tracking-widest">Terms</a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-full border-2 border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]">
+                        </div>
+                        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Core Engine:
+                            Optimal</span>
+                    </div>
+                    <div class="w-px h-3 bg-slate-200"></div>
+                    <span class="text-[10px] font-black text-primary uppercase tracking-widest italic">v2.0.4
+                        Build</span>
                 </div>
             </div>
         </div>
     </footer>
-    <script type="module" src="./src/main.js"></script>
+
+    <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>

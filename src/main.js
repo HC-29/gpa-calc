@@ -1,153 +1,199 @@
-import "./style.css"
+import './style.css';
 
-// Strict Grade Mapping Data
+// 1. GLOBAL SCALE DICTIONARY
 const SCALES = {
-    "4": { 'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0.0 },
-    "5": { 'A+': 5.0, 'A': 5.0, 'A-': 4.5, 'B+': 4.0, 'B': 3.5, 'B-': 3.0, 'C+': 2.5, 'C': 2.0, 'C-': 1.5, 'D+': 1.0, 'D': 0.5, 'F': 0.0 },
-    "10": { 'A+': 10.0, 'A': 9.0, 'A-': 8.5, 'B+': 8.0, 'B': 7.5, 'B-': 7.0, 'C+': 6.5, 'C': 6.0, 'C-': 5.5, 'D+': 5.0, 'D': 4.0, 'F': 0.0 }
+    '4.0':  { 'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0.0 },
+    '5.0':  { 'A': 5.0, 'B': 4.0, 'C': 3.0, 'D': 2.0, 'F': 0.0 },
+    '10.0': { '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, '1': 1, '0': 0 },
+    '12.0': { 'A+': 12, 'A': 11, 'A-': 10, 'B+': 9, 'B': 8, 'B-': 7, 'C+': 6, 'C': 5, 'C-': 4, 'D+': 3, 'D': 2, 'F': 0 },
+    '100.0': null // Handled via direct number input
 };
 
-const LEVEL_WEIGHTS = { 'regular': 0.0, 'honors': 0.5, 'ap': 1.0 };
+const container = document.getElementById('course-container');
+const gpaDisplay = document.getElementById('gpa-display');
 
-document.addEventListener('DOMContentLoaded', () => {
-    let currentScale = '4';
-    let isWeighted = false;
+// --- 2. THE CALCULATION ENGINE ---
 
-    const courseList = document.getElementById('course-list');
-    const gpaDisplay = document.getElementById('gpa-display');
-    const addBtn = document.getElementById('add-course');
-    const calcBtn = document.getElementById('calculate-btn');
+function calculateGPA() {
+    let totalPoints = 0;
+    let totalCredits = 0;
+    
+    const scaleSelector = document.getElementById('scale-selector');
+    const activeScaleKey = scaleSelector ? scaleSelector.value : '4.0';
+    const selectedScale = SCALES[activeScaleKey];
 
-    // --- SEGMENTED TOGGLE LOGIC ---
-    function setupToggle(containerId, initialVal, callback) {
-        const container = document.getElementById(containerId);
-        const buttons = container.querySelectorAll('button');
+    const rows = document.querySelectorAll('.course-card');
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => {
-                    b.classList.remove('bg-white', 'text-primary', 'shadow-sm');
-                    b.classList.add('text-slate-500');
-                });
-                btn.classList.add('bg-white', 'text-primary', 'shadow-sm');
-                btn.classList.remove('text-slate-500');
+    rows.forEach(row => {
+        const gradeInput = row.querySelector('.grade-select');
+        const creditInput = row.querySelector('.credit-input');
+        const weightInput = row.querySelector('.weight-select');
 
-                const val = btn.dataset.scale || btn.dataset.weighted;
-                callback(val);
-            });
-        });
-    }
+        const credits = parseFloat(creditInput.value) || 0;
+        let gradeValue = 0;
 
-    setupToggle('scale-toggle', '4', (val) => {
-        currentScale = val;
-        syncRowsToSettings();
+        if (activeScaleKey === '100.0') {
+            gradeValue = parseFloat(gradeInput.value) || 0;
+        } else if (selectedScale) {
+            gradeValue = selectedScale[gradeInput.value] || 0;
+        }
+
+        // Apply Weighted Boost (+1.0 for AP, +0.5 for Honors)
+        const weightBoost = weightInput ? parseFloat(weightInput.value) : 0;
+        
+        if (credits > 0) {
+            totalPoints += (gradeValue + weightBoost) * credits;
+            totalCredits += credits;
+        }
     });
 
-    setupToggle('weight-toggle', 'false', (val) => {
-        isWeighted = (val === 'true');
-        syncRowsToSettings();
-    });
+    const result = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
+    if (gpaDisplay) gpaDisplay.innerText = result;
 
-    // Synchronize rows with global scale/weight settings
-    function syncRowsToSettings() {
-        const rows = document.querySelectorAll('.course-row');
-        rows.forEach(row => {
-            // Level Selector UI
-            const levelSelect = row.querySelector('.level-input');
-            levelSelect.disabled = !isWeighted;
-            levelSelect.style.opacity = isWeighted ? "1" : "0.4";
-            levelSelect.style.cursor = isWeighted ? "pointer" : "not-allowed";
+    saveData(); // Persist to LocalStorage
+}
 
-            // Grade Dropdown content
-            const gradeSelect = row.querySelector('.grade-input');
-            const previousVal = gradeSelect.value;
-            const grades = Object.keys(SCALES[currentScale]);
+// --- 3. UI GENERATOR (THE CARD) ---
 
-            gradeSelect.innerHTML = grades.map(g => `<option value="${g}">${g}</option>`).join('');
-            if (grades.includes(previousVal)) gradeSelect.value = previousVal;
-        });
-    }
+function createCourseRow(name = '', grade = '', credits = '', weight = '0') {
+    const scaleSelector = document.getElementById('scale-selector');
+    const activeScaleKey = scaleSelector ? scaleSelector.value : '4.0';
+    
+    const div = document.createElement('div');
+    div.className = "course-card bg-white border-[3px] border-slate-900 rounded-[1.5rem] p-5 flex flex-col md:flex-row gap-4 items-center shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] transition-all mb-4";
+    
+    // Switch between Select Dropdown or Number Input for 100% scale
+    const gradeInputHTML = activeScaleKey === '100.0' 
+        ? `<input type="number" placeholder="0-100" value="${grade}" class="grade-select w-full bg-slate-50 border-2 border-slate-900 rounded-xl font-black p-2.5 outline-none focus:ring-2 focus:ring-primary/20">`
+        : `<select class="grade-select w-full bg-slate-50 border-2 border-slate-900 rounded-xl font-black p-2.5 outline-none cursor-pointer focus:ring-2 focus:ring-primary/20">
+            ${Object.keys(SCALES[activeScaleKey]).map(g => `<option value="${g}" ${g === grade ? 'selected' : ''}>${g}</option>`).join('')}
+           </select>`;
 
-    // --- ROW GENERATION ---
-    function createRow() {
-        const row = document.createElement('div');
-        row.className = "course-row grid grid-cols-12 gap-3 p-4 items-center group transition-colors hover:bg-slate-50/50";
-
-        row.innerHTML = `
-            <div class="col-span-12 md:col-span-4">
-                <input type="text" placeholder="Course Name" class="w-full p-2 bg-transparent outline-none font-medium placeholder:text-slate-300">
+    div.innerHTML = `
+        <div class="flex-1 w-full min-w-37.5">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 block">Course Name</label>
+            <input type="text" placeholder="e.g. Physics" value="${name}" class="name-input w-full font-bold text-lg outline-none bg-transparent">
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto items-end">
+            <div>
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 block">Grade</label>
+                ${gradeInputHTML}
             </div>
-            <div class="col-span-5 md:col-span-3">
-                <select class="level-input w-full p-2 bg-white md:bg-slate-100 rounded-lg text-xs font-bold appearance-none cursor-pointer border md:border-none transition-opacity">
-                    <option value="regular">Regular Course</option>
-                    <option value="honors">Honors (+0.5)</option>
-                    <option value="ap">AP / IB (+1.0)</option>
+            <div>
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 block">Type</label>
+                <select class="weight-select w-full bg-slate-50 border-2 border-slate-900 rounded-xl font-black p-2.5 outline-none cursor-pointer">
+                    <option value="0" ${weight === '0' ? 'selected' : ''}>Regular</option>
+                    <option value="0.5" ${weight === '0.5' ? 'selected' : ''}>Honors (+0.5)</option>
+                    <option value="1.0" ${weight === '1.0' ? 'selected' : ''}>AP/IB (+1.0)</option>
                 </select>
             </div>
-            <div class="col-span-3 md:col-span-2">
-                <input type="number" placeholder="Credits" class="credit-input w-full p-2 outline-none text-center font-bold border-b-2 border-transparent focus:border-blue-500 bg-transparent" min="0">
+            <div class="w-20">
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1 block">Credits</label>
+                <input type="number" value="${credits}" class="credit-input w-full bg-slate-50 border-2 border-slate-900 rounded-xl font-black p-2.5 outline-none focus:ring-2 focus:ring-primary/20">
             </div>
-            <div class="col-span-3 md:col-span-2">
-                <select class="grade-input w-full p-2 font-black text-primary bg-transparent outline-none cursor-pointer text-center">
-                    </select>
-            </div>
-            <div class="col-span-1 text-right">
-                <button class="delete-btn text-slate-300 hover:text-red-500 transition-colors p-1">&times;</button>
-            </div>
-        `;
+            <button class="remove-btn p-2.5 text-slate-300 hover:text-red-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+            </button>
+        </div>
+    `;
 
-        row.querySelector('.delete-btn').addEventListener('click', () => {
-            if (document.querySelectorAll('.course-row').length > 1) {
-                row.remove();
-                calculateGPA();
-            }
+    // Attach Listeners
+    div.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', calculateGPA);
+    });
+
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+        div.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            div.remove();
+            calculateGPA();
+        }, 150);
+    });
+
+    container.appendChild(div);
+}
+
+// --- 4. PERSISTENCE (LOCAL STORAGE) ---
+
+function saveData() {
+    const courses = [];
+    document.querySelectorAll('.course-card').forEach(row => {
+        courses.push({
+            name: row.querySelector('.name-input').value,
+            grade: row.querySelector('.grade-select').value,
+            credits: row.querySelector('.credit-input').value,
+            weight: row.querySelector('.weight-select').value
         });
+    });
+    
+    const scaleSelector = document.getElementById('scale-selector');
+    const settings = {
+        scale: scaleSelector ? scaleSelector.value : '4.0',
+        courses: courses
+    };
+    
+    localStorage.setItem('vector_user_data', JSON.stringify(settings));
 
-        courseList.appendChild(row);
-        syncRowsToSettings();
+    const status = document.getElementById('save-status');
+    if (status) {
+        status.innerText = "Synced";
+        setTimeout(() => { status.innerText = "Local Sync Active"; }, 1500);
+    }
+}
+
+function loadData() {
+    const rawData = localStorage.getItem('vector_user_data');
+    if (rawData) {
+        const data = JSON.parse(rawData);
+        
+        // Restore Scale
+        const scaleSelector = document.getElementById('scale-selector');
+        if (scaleSelector && data.scale) scaleSelector.value = data.scale;
+
+        // Restore Courses
+        container.innerHTML = '';
+        if (data.courses && data.courses.length > 0) {
+            data.courses.forEach(c => createCourseRow(c.name, c.grade, c.credits, c.weight));
+        } else {
+            for(let i=0; i<3; i++) createCourseRow();
+        }
+    } else {
+        // Default empty state
+        for(let i=0; i<3; i++) createCourseRow();
+    }
+    calculateGPA();
+}
+
+// --- 5. INITIALIZATION ---
+
+document.addEventListener('DOMContentLoaded', () => {
+    const addBtn = document.getElementById('add-course');
+    const scaleSelector = document.getElementById('scale-selector');
+
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            createCourseRow();
+            calculateGPA();
+        });
     }
 
-    // --- CALCULATION LOGIC ---
-    function calculateGPA() {
-        const rows = document.querySelectorAll('.course-row');
-        let totalQualityPoints = 0;
-        let totalCredits = 0;
-
-        rows.forEach(row => {
-            const credits = parseFloat(row.querySelector('.credit-input').value);
-            const gradeLetter = row.querySelector('.grade-input').value;
-            const level = row.querySelector('.level-input').value;
-
-            if (!isNaN(credits) && credits > 0) {
-                // Formula: (Base Grade Point + Weighted Bonus) * Credit Hours
-                let points = SCALES[currentScale][gradeLetter];
-                if (isWeighted) points += LEVEL_WEIGHTS[level];
-
-                totalQualityPoints += (points * credits);
-                totalCredits += credits;
-            }
+    if (scaleSelector) {
+        scaleSelector.addEventListener('change', () => {
+            // Re-render rows to update the grade dropdowns for the new scale
+            const currentCourses = [];
+            document.querySelectorAll('.course-card').forEach(row => {
+                currentCourses.push({
+                    name: row.querySelector('.name-input').value,
+                    grade: '', // Clear grades when switching scales to prevent errors
+                    credits: row.querySelector('.credit-input').value,
+                    weight: row.querySelector('.weight-select').value
+                });
+            });
+            container.innerHTML = '';
+            currentCourses.forEach(c => createCourseRow(c.name, c.grade, c.credits, c.weight));
+            calculateGPA();
         });
-
-        const result = totalCredits > 0 ? (totalQualityPoints / totalCredits).toFixed(2) : "0.00";
-        const ring = document.getElementById('gpa-ring');
-        let percentage = (parseFloat(result) / parseFloat(currentScale)) * 100;
-        percentage = Math.min(percentage, 100);
-        // Update the display text
-        gpaDisplay.innerText = result;
-
-        // Dynamically update the ring border
-        // The blue color fills up to the percentage, the gray color takes over for the rest
-        ring.style.background = `conic-gradient(
-    #0076ED ${percentage}%, 
-    #e2e8f0 ${percentage}%
-)`;
     }
 
-    // Event Listeners
-    addBtn.addEventListener('click', createRow);
-    calcBtn.addEventListener('click', calculateGPA);
-
-    // Initialize with 4 rows
-    for (let i = 0; i < 4; i++) createRow();
+    loadData(); 
 });
-
