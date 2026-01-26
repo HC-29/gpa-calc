@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const activeRow = rowRefs.find(ref => ref.letter === match.letter);
             if (activeRow) {
                 activeRow.tr.classList.add('bg-blue-50', 'border-l-primary');
-                activeRow.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } else {
             resPercent.innerText = '--';
