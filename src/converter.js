@@ -1,4 +1,6 @@
-const GRADE_DATA = [
+import "./style.css"
+
+const CONVERSION_DATA = [
     { min: 97, max: 100, letter: 'A+', gpa: 4.0 },
     { min: 93, max: 96, letter: 'A', gpa: 4.0 },
     { min: 90, max: 92, letter: 'A-', gpa: 3.7 },
@@ -14,49 +16,71 @@ const GRADE_DATA = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    const tableBody = document.getElementById('grade-table-body');
     const input = document.getElementById('converter-input');
+    const tableBody = document.getElementById('grade-table-body');
+    const resPercent = document.getElementById('res-percent');
     const resLetter = document.getElementById('res-letter');
     const resGpa = document.getElementById('res-gpa');
 
-    // 1. Populate Table
-    GRADE_DATA.forEach(item => {
-        const row = document.createElement('tr');
-        row.className = "hover:bg-slate-50 transition-colors";
-        row.innerHTML = `
-            <td class="p-6 font-medium text-slate-600">${item.min}% - ${item.max}%</td>
-            <td class="p-6 font-black text-slate-800">${item.letter}</td>
-            <td class="p-6 font-bold text-primary">${item.gpa.toFixed(1)}</td>
+    // Build table and store references for highlighting
+    const rowRefs = CONVERSION_DATA.map(data => {
+        const tr = document.createElement('tr');
+        tr.className = "transition-all duration-300 border-l-4 border-transparent";
+        tr.innerHTML = `
+            <td class="p-5 font-medium text-slate-600">${data.min}% - ${data.max}%</td>
+            <td class="p-5 font-black text-slate-800 text-center">${data.letter}</td>
+            <td class="p-5 font-bold text-primary text-right">${data.gpa.toFixed(1)}</td>
         `;
-        tableBody.appendChild(row);
+        tableBody.appendChild(tr);
+        return { tr, ...data };
     });
 
-    // 2. Live Conversion Logic
     input.addEventListener('input', (e) => {
-        const val = e.target.value.trim().toUpperCase();
+        let val = e.target.value.trim().toUpperCase().replace('%', '');
+        
+        // Reset highlights and results
+        rowRefs.forEach(ref => {
+            ref.tr.classList.remove('bg-blue-50', 'border-l-primary');
+        });
+
         if (!val) {
+            resPercent.innerText = '--';
             resLetter.innerText = '--';
             resGpa.innerText = '--';
             return;
         }
 
-        let found = null;
+        let match = null;
 
         if (!isNaN(val)) {
-            // It's a number/percentage
             const num = parseFloat(val);
-            found = GRADE_DATA.find(g => num >= g.min && num <= g.max);
-            // Handle edge case for 100+
-            if (num > 100) found = GRADE_DATA[0];
+            // Detection Logic: 
+            // If num <= 4.0, assume it's a GPA input. 
+            // If num > 4.0, assume it's a Percentage input.
+            if (num <= 4.0) {
+                match = CONVERSION_DATA.find(d => num >= d.gpa) || CONVERSION_DATA[CONVERSION_DATA.length - 1];
+            } else {
+                match = CONVERSION_DATA.find(d => num >= d.min && num <= d.max);
+                if (num > 100) match = CONVERSION_DATA[0];
+            }
         } else {
-            // It's a letter
-            found = GRADE_DATA.find(g => g.letter === val);
+            // Letter Grade Input
+            match = CONVERSION_DATA.find(d => d.letter === val);
         }
 
-        if (found) {
-            resLetter.innerText = found.letter;
-            resGpa.innerText = found.gpa.toFixed(1);
+        if (match) {
+            resPercent.innerText = `${match.min}%`;
+            resLetter.innerText = match.letter;
+            resGpa.innerText = match.gpa.toFixed(1);
+
+            // Find and highlight the specific row in the table
+            const activeRow = rowRefs.find(ref => ref.letter === match.letter);
+            if (activeRow) {
+                activeRow.tr.classList.add('bg-blue-50', 'border-l-primary');
+                activeRow.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         } else {
+            resPercent.innerText = '--';
             resLetter.innerText = '??';
             resGpa.innerText = '--';
         }

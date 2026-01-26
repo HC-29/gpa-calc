@@ -3,3 +3,13 @@
 @theme {
     --color-primary: #0076ED;
 }
+
+:root {
+  --primary: #0076ED;
+}
+
+/* Add this to ensure the "primary" utility works everywhere */
+.text-primary { color: var(--primary) !important; }
+.bg-primary { background-color: var(--primary) !important; }
+.border-primary { border-color: var(--primary) !important; }
+.focus-border-primary:focus { border-color: var(--primary) !important; }

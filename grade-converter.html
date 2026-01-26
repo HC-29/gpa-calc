@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Converter | Percentage, Letter, & GPA</title>
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto space-y-8">
+
+        <header class="mb-8">
+            <a href="./index.html" class="text-primary] font-bold text-sm underline">← Back to Calculator</a>
+            <h1 class="text-4xl font-black text-slate-800 mt-4">Universal Grade <span
+                    class="text-primary]">Converter</span></h1>
+        </header>
+
+        <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
+                Enter Percentage, Letter, or GPA
+            </label>
+            <div class="flex flex-col gap-6">
+                <input type="text" id="converter-input" placeholder="Try 'A-', '92', or '3.7'"
+                    class="w-full p-4 text-2xl font-bold border-2 border-slate-100 rounded-2xl focus:border-primary] outline-none transition-all"
+                    autocomplete="off">
+
+                <div class="grid grid-cols-3 gap-4 bg-slate-900 rounded-2xl p-6 text-white shadow-xl">
+                    <div class="text-center">
+                        <span class="block text-[10px] text-slate-500 font-bold uppercase mb-1">Percentage</span>
+                        <span id="res-percent" class="text-3xl font-black">--</span>
+                    </div>
+                    <div class="text-center border-x border-slate-700">
+                        <span class="block text-[10px] text-slate-500 font-bold uppercase mb-1">Letter</span>
+                        <span id="res-letter" class="text-3xl font-black">--</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block text-[10px] text-slate-500 font-bold uppercase mb-1">4.0 GPA</span>
+                        <span id="res-gpa" class="text-3xl font-black">--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase">
+                        <th class="p-5">Percentage Range</th>
+                        <th class="p-5 text-center">Letter</th>
+                        <th class="p-5 text-right">GPA Value</th>
+                    </tr>
+                </thead>
+                <tbody id="grade-table-body" class="divide-y divide-slate-50"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module" src="./src/converter.js"></script>
+</body>
+
+</html>
