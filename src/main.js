@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 buttons.forEach(b => {
-                    b.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                    b.classList.remove('bg-white', 'text-primary', 'shadow-sm');
                     b.classList.add('text-slate-500');
                 });
-                btn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                btn.classList.add('bg-white', 'text-primary', 'shadow-sm');
                 btn.classList.remove('text-slate-500');
                 
                 const val = btn.dataset.scale || btn.dataset.weighted;
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="number" placeholder="Credits" class="credit-input w-full p-2 outline-none text-center font-bold border-b-2 border-transparent focus:border-blue-500 bg-transparent" min="0">
             </div>
             <div class="col-span-3 md:col-span-2">
-                <select class="grade-input w-full p-2 font-black text-blue-600 bg-transparent outline-none cursor-pointer text-center">
+                <select class="grade-input w-full p-2 font-black text-primary bg-transparent outline-none cursor-pointer text-center">
                     </select>
             </div>
             <div class="col-span-1 text-right">

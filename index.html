@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional GPA Calculator | Weighted & Unweighted</title>
     <link rel="stylesheet" href="./src/style.css">
+    <link rel="shortcut icon" href="vector.svg" type="image/x-icon">
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen p-4 md:p-8 pb-32">
 
@@ -23,7 +24,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Base Scale</label>
                             <div id="scale-toggle" class="flex p-1 bg-slate-100 rounded-xl">
-                                <button data-scale="4" class="flex-1 py-2 rounded-lg font-bold transition-all bg-white text-blue-600 shadow-sm">4.0</button>
+                                <button data-scale="4" class="flex-1 py-2 rounded-lg font-bold transition-all bg-white text-primary shadow-sm">4.0</button>
                                 <button data-scale="5" class="flex-1 py-2 rounded-lg font-bold transition-all text-slate-500 hover:text-slate-800">5.0</button>
                                 <button data-scale="10" class="flex-1 py-2 rounded-lg font-bold transition-all text-slate-500 hover:text-slate-800">10.0</button>
                             </div>
@@ -31,7 +32,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Calculation Type</label>
                             <div id="weight-toggle" class="flex p-1 bg-slate-100 rounded-xl">
-                                <button data-weighted="false" class="flex-1 py-2 rounded-lg font-bold transition-all bg-white text-blue-600 shadow-sm">Unweighted</button>
+                                <button data-weighted="false" class="flex-1 py-2 rounded-lg font-bold transition-all bg-white text-primary shadow-sm">Unweighted</button>
                                 <button data-weighted="true" class="flex-1 py-2 rounded-lg font-bold transition-all text-slate-500 hover:text-slate-800">Weighted</button>
                             </div>
                         </div>
@@ -50,7 +51,7 @@
                     <div id="course-list" class="divide-y divide-slate-100">
                         </div>
 
-                    <button id="add-course" class="w-full py-4 bg-white text-blue-600 font-bold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+                    <button id="add-course" class="w-full py-4 bg-white text-primary font-bold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
                         <span class="text-xl">+</span> Add Course
                     </button>
                 </section>
@@ -62,7 +63,7 @@
                         <h3 class="text-slate-400 font-bold uppercase tracking-widest text-xs">Calculated GPA</h3>
                         <div id="gpa-display" class="text-8xl font-black my-4 tabular-nums">0.00</div>
                         <p class="text-slate-400 text-sm mb-6">Based on your current semester</p>
-                        <button id="calculate-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-900/20 active:scale-95">
+                        <button id="calculate-btn" class="w-full bg-primary hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-900/20 active:scale-95">
                             Update Result
                         </button>
                     </div>
