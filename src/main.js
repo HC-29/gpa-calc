@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupToggle(containerId, initialVal, callback) {
         const container = document.getElementById(containerId);
         const buttons = container.querySelectorAll('button');
-        
+
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 buttons.forEach(b => {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 btn.classList.add('bg-white', 'text-primary', 'shadow-sm');
                 btn.classList.remove('text-slate-500');
-                
+
                 const val = btn.dataset.scale || btn.dataset.weighted;
                 callback(val);
             });
@@ -55,12 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
             levelSelect.disabled = !isWeighted;
             levelSelect.style.opacity = isWeighted ? "1" : "0.4";
             levelSelect.style.cursor = isWeighted ? "pointer" : "not-allowed";
-            
+
             // Grade Dropdown content
             const gradeSelect = row.querySelector('.grade-input');
             const previousVal = gradeSelect.value;
             const grades = Object.keys(SCALES[currentScale]);
-            
+
             gradeSelect.innerHTML = grades.map(g => `<option value="${g}">${g}</option>`).join('');
             if (grades.includes(previousVal)) gradeSelect.value = previousVal;
         });
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createRow() {
         const row = document.createElement('div');
         row.className = "course-row grid grid-cols-12 gap-3 p-4 items-center group transition-colors hover:bg-slate-50/50";
-        
+
         row.innerHTML = `
             <div class="col-span-12 md:col-span-4">
                 <input type="text" placeholder="Course Name" class="w-full p-2 bg-transparent outline-none font-medium placeholder:text-slate-300">
@@ -120,14 +120,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Formula: (Base Grade Point + Weighted Bonus) * Credit Hours
                 let points = SCALES[currentScale][gradeLetter];
                 if (isWeighted) points += LEVEL_WEIGHTS[level];
-                
+
                 totalQualityPoints += (points * credits);
                 totalCredits += credits;
             }
         });
 
         const result = totalCredits > 0 ? (totalQualityPoints / totalCredits).toFixed(2) : "0.00";
+        const ring = document.getElementById('gpa-ring');
+        let percentage = (parseFloat(result) / parseFloat(currentScale)) * 100;
+        percentage = Math.min(percentage, 100);
+        // Update the display text
         gpaDisplay.innerText = result;
+
+        // Dynamically update the ring border
+        // The blue color fills up to the percentage, the gray color takes over for the rest
+        ring.style.background = `conic-gradient(
+    #0076ED ${percentage}%, 
+    #e2e8f0 ${percentage}%
+)`;
     }
 
     // Event Listeners
@@ -135,5 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
     calcBtn.addEventListener('click', calculateGPA);
 
     // Initialize with 4 rows
-    for(let i=0; i<4; i++) createRow();
+    for (let i = 0; i < 4; i++) createRow();
 });
+
