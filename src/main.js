@@ -53,7 +53,7 @@ function calculateGPA() {
     saveData(); // Persist to LocalStorage
 }
 
-// --- 3. UI GENERATOR (THE CARD) ---
+// --- 3. UI Generator ---
 
 function createCourseRow(name = '', grade = '', credits = '', weight = '0') {
     const scaleSelector = document.getElementById('scale-selector');
